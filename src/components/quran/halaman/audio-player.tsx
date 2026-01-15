@@ -190,9 +190,12 @@ export default function PageAudioPlayer({ verses }: Props) {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Select value={qoriId} onValueChange={handleQoriChange}>
-            <SelectTrigger className="w-full sm:w-[260px]">
-              <SelectValue placeholder="Pilih qori" />
-            </SelectTrigger>
+          <SelectTrigger
+            className="w-full sm:w-[260px]"
+            aria-label="Pilih qori"
+          >
+            <SelectValue placeholder="Pilih qori" />
+          </SelectTrigger>
             <SelectContent>
               {availableQori.map((qori) => (
                 <SelectItem key={qori.id} value={qori.id}>

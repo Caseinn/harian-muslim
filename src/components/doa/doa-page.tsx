@@ -170,7 +170,7 @@ export default function DoaPage({ items }: Props) {
               variant="outline"
               role="combobox"
               aria-expanded={groupOpen}
-              className="h-10 w-full justify-between sm:w-[280px]"
+              className="h-10 w-full justify-between sm:w-[280px] cursor-pointer"
             >
               <span className="truncate">{activeGroupLabel}</span>
               <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
@@ -241,7 +241,7 @@ export default function DoaPage({ items }: Props) {
                   className="border-0"
                 >
                   <Card className="gap-0 border-border/60 bg-background/70 py-0 shadow-sm">
-                    <AccordionTrigger className="px-5 py-4 text-left text-sm font-semibold hover:no-underline">
+                    <AccordionTrigger className="px-5 py-4 text-left text-sm font-semibold hover:no-underline cursor-pointer">
                       <div className="flex w-full flex-1 flex-col gap-2">
                         <div className="text-base font-semibold text-foreground">
                           {item.nama}

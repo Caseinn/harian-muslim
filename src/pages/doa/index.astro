@@ -3,7 +3,7 @@ import DoaPage from "@/components/doa/doa-page";
 import Layout from "@/layouts/layout.astro";
 import { getAllDoa, type DoaItem } from "@/lib/api/doa";
 
-export const prerender = false;
+export const prerender = true;
 
 let doaList: DoaItem[] = [];
 let error: string | null = null;

@@ -1,5 +1,3 @@
-const BASE = "https://equran.id/api";
-
 export type DoaItem = {
   id: number;
   grup: string;
@@ -11,16 +9,36 @@ export type DoaItem = {
   tag: string[];
 };
 
+let doaSnapshotPromise: Promise<DoaItem[]> | null = null;
+
+async function readDoaSnapshot(): Promise<DoaItem[]> {
+  if (import.meta.env.SSR) {
+    const { readFile } = await import("node:fs/promises");
+    const { resolve } = await import("node:path");
+    const filePath = resolve(process.cwd(), "public", "snapshots", "doa.json");
+    const raw = await readFile(filePath, "utf8");
+    return JSON.parse(raw) as DoaItem[];
+  }
+
+  const res = await fetch("/snapshots/doa.json");
+  if (!res.ok) {
+    throw new Error(`Missing snapshot /snapshots/doa.json (${res.status})`);
+  }
+  return (await res.json()) as DoaItem[];
+}
+
 export async function getAllDoa(): Promise<DoaItem[]> {
-  const res = await fetch(`${BASE}/doa`);
-  if (!res.ok) throw new Error("Failed fetch /doa");
-  const json = await res.json();
-  return json.data;
+  if (!doaSnapshotPromise) {
+    doaSnapshotPromise = readDoaSnapshot();
+  }
+  return doaSnapshotPromise;
 }
 
 export async function getDoaById(id: string | number): Promise<DoaItem> {
-  const res = await fetch(`${BASE}/doa/${id}`);
-  if (!res.ok) throw new Error("Failed fetch /doa/:id");
-  const json = await res.json();
-  return json.data;
+  const list = await getAllDoa();
+  const found = list.find((item) => String(item.id) === String(id));
+  if (!found) {
+    throw new Error(`Doa ${id} not found in snapshot.`);
+  }
+  return found;
 }

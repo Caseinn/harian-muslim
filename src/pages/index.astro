@@ -1,16 +1,18 @@
 ---
+import Layout from "@/layouts/layout.astro";
 
+import HeroSection from "@/components/landing/hero";
+import TodaySection from "@/components/landing/today";
+import FeaturesSection from "@/components/landing/features";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+  title="Harian Muslim - Beranda"
+  description="Platform harian untuk Al-Qur'an, jadwal sholat, dan doa."
+>
+  <main class="mx-auto w-full max-w-7xl px-4 md:px-6">
+    <HeroSection />
+    <TodaySection client:idle />
+    <FeaturesSection />
+  </main>
+</Layout>

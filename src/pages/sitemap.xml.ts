@@ -9,7 +9,13 @@ function renderUrl(loc: string, lastmod: string) {
 }
 
 export async function GET({ request }: { request: Request }) {
-  const origin = new URL(request.url).origin;
+  const siteOrigin = import.meta.env.SITE_ORIGIN;
+  if (!siteOrigin && !import.meta.env.DEV) {
+    return new Response("Missing SITE_ORIGIN", { status: 500 });
+  }
+  const origin = siteOrigin
+    ? new URL(siteOrigin).origin
+    : new URL(request.url).origin;
   const lastmod = new Date().toISOString();
 
   const urls = [

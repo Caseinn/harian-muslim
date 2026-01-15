@@ -71,7 +71,7 @@ export default function QuranPage({
         </div>
       </section>
 
-      <section className="pb-12">
+      <section>
         <header className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-semibold">{listTitle}</h2>

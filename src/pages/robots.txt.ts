@@ -1,5 +1,9 @@
 export async function GET({ request }: { request: Request }) {
-  const url = new URL(request.url);
+  const siteOrigin = import.meta.env.SITE_ORIGIN;
+  if (!siteOrigin && !import.meta.env.DEV) {
+    return new Response("Missing SITE_ORIGIN", { status: 500 });
+  }
+  const url = siteOrigin ? new URL(siteOrigin) : new URL(request.url);
   const origin = url.origin;
   const host = url.host;
   const body = [

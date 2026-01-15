@@ -1,10 +1,10 @@
 export default function Logo() {
   return (
     <img
-      src="/favicon.svg"
+      src="/logo.webp"
       alt="Logo"
-      width={33}
-      height={33}
+      width={40}
+      height={40}
     />
   );
 }

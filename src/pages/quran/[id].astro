@@ -36,24 +36,17 @@ const nextName = nextId
   : null;
 ---
 
-<script define:vars={{ surahNomor: surah.nomor, surahNama: surah.namaLatin }}>
-  const key = "hm:last_read";
-  try {
-    localStorage.setItem(
-      key,
-      JSON.stringify({
-        type: "surah",
-        id: surahNomor,
-        label: `${surahNama} (Surah ${surahNomor})`,
-      })
-    );
-  } catch {}
-</script>
-
 <Layout
   title={`Al-Qur'an - ${surah.namaLatin}`}
   description={`${surah.arti} - ${surah.tempatTurun} - ${surah.jumlahAyat} ayat`}
 >
+  <div
+    class="hidden"
+    data-last-read="true"
+    data-type="surah"
+    data-id={surah.nomor}
+    data-label={`${surah.namaLatin} (Surah ${surah.nomor})`}
+  ></div>
   <main class="mx-auto w-full max-w-4xl px-4 py-12 md:px-6">
     <section class="illumination-panel p-6 md:p-8">
       <div class="relative z-10">

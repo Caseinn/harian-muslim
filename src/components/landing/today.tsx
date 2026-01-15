@@ -234,6 +234,7 @@ export default function TodaySection() {
   }, [location]);
 
   React.useEffect(() => {
+    if (!locationOpen || locationOptions.length) return;
     let active = true;
 
     getShalatKabKotaAll()
@@ -247,7 +248,7 @@ export default function TodaySection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [locationOpen, locationOptions.length]);
 
   const detectLocation = React.useCallback(async () => {
     if (typeof window === "undefined") return;
@@ -359,6 +360,7 @@ export default function TodaySection() {
   }, []);
 
   React.useEffect(() => {
+    if (!lastRead || surahList.length) return;
     let active = true;
 
     getSurahList()
@@ -372,7 +374,7 @@ export default function TodaySection() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [lastRead, surahList.length]);
 
   React.useEffect(() => {
     let active = true;

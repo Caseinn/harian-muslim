@@ -1,0 +1,38 @@
+---
+import "@/styles/global.css";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+
+const {
+  title = "Harian Muslim",
+  description = "Platform harian untuk Al-Qur'an, jadwal sholat, dan doa.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description ? <meta name="description" content={description} /> : null}
+    <meta name="theme-color" content="#f8f9fa" />
+  </head>
+  <body class="overflow-hidden">
+    <a href="#konten-utama" class="sr-only focus:not-sr-only">
+      Lewati ke konten
+    </a>
+
+    <div class="h-screen overflow-y-auto no-scrollbar">
+      <Navbar client:load pathname={Astro.url.pathname} />
+
+      <main id="konten-utama">
+        <slot />
+      </main>
+
+      <Footer />
+    </div>
+  </body>
+</html>

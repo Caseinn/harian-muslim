@@ -1,0 +1,19 @@
+---
+import Layout from "@/layouts/layout.astro";
+import QuranPage from "@/components/quran/quran-page";
+import { getSurahList } from "@/lib/api/quran";
+
+export const prerender = false;
+
+const surah = await getSurahList();
+
+const q = Astro.url.searchParams.get("q") ?? "";
+const mode = (Astro.url.searchParams.get("mode") ?? "surah") as "surah" | "page";
+---
+
+<Layout title="Al-Qur'an" description="Daftar surah Al-Qur'an.">
+  <main class="mx-auto w-full max-w-7xl px-4 py-10 md:px-6">
+    <!-- HERO -->
+    <QuranPage client:idle initialMode={mode} initialQuery={q} surahList={surah} />
+  </main>
+</Layout>

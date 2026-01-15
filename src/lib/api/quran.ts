@@ -1,8 +1,23 @@
-const BASE = "https://equran.id/api/v2";
-const PAGE_BASE = "https://api.quran.com/api/v4";
+type SnapshotMap<T> = Record<string, T>;
+
+async function readSnapshotFile<T>(fileName: string): Promise<T> {
+  if (import.meta.env.SSR) {
+    const { readFile } = await import("node:fs/promises");
+    const { resolve } = await import("node:path");
+    const filePath = resolve(process.cwd(), "public", "snapshots", fileName);
+    const raw = await readFile(filePath, "utf8");
+    return JSON.parse(raw) as T;
+  }
+
+  const res = await fetch(`/snapshots/${fileName}`);
+  if (!res.ok) {
+    throw new Error(`Missing snapshot /snapshots/${fileName} (${res.status})`);
+  }
+  return (await res.json()) as T;
+}
 
 /* =========================
- * EQURAN.ID TYPES + FETCH
+ * EQURAN.ID TYPES
  * ========================= */
 export type SurahItem = {
   nomor: number;
@@ -23,22 +38,104 @@ export type AyatItem = {
   audio: Record<string, string>;
 };
 
+/* =========================
+ * SNAPSHOTS (SERVER + CLIENT)
+ * ========================= */
+type QuranPageIndexSnapshot = {
+  pages: SnapshotMap<QuranPageVerseIndex[]>;
+};
+
+let surahListSnapshotPromise: Promise<SurahItem[]> | null = null;
+let surahDetailSnapshotPromise: Promise<
+  Map<number, SurahItem & { ayat: AyatItem[] }>
+> | null = null;
+let pageIndexSnapshotPromise: Promise<QuranPageIndexSnapshot> | null = null;
+let surahPagesSnapshotPromise: Promise<Record<number, number[]>> | null = null;
+
+async function loadSurahListSnapshot() {
+  if (!surahListSnapshotPromise) {
+    surahListSnapshotPromise = readSnapshotFile<SurahItem[]>(
+      "quran-surah-list.json"
+    );
+  }
+  return surahListSnapshotPromise;
+}
+
+async function loadSurahDetailSnapshot() {
+  if (!surahDetailSnapshotPromise) {
+    surahDetailSnapshotPromise = readSnapshotFile<
+      (SurahItem & { ayat: AyatItem[] })[]
+    >("quran-surah-detail.json").then((list) => {
+      return new Map(list.map((surah) => [surah.nomor, surah]));
+    });
+  }
+  return surahDetailSnapshotPromise;
+}
+
+async function loadPageIndexSnapshot() {
+  if (!pageIndexSnapshotPromise) {
+    pageIndexSnapshotPromise = readSnapshotFile<QuranPageIndexSnapshot>(
+      "quran-page-index.json"
+    );
+  }
+  return pageIndexSnapshotPromise;
+}
+
+async function loadSurahPagesSnapshot() {
+  if (!surahPagesSnapshotPromise) {
+    surahPagesSnapshotPromise = (async () => {
+      const index = await loadPageIndexSnapshot();
+      const map = new Map<number, Set<number>>();
+
+      for (const [pageKey, verses] of Object.entries(index.pages ?? {})) {
+        const pageNumber = Number(pageKey);
+        if (!Number.isFinite(pageNumber)) continue;
+
+        for (const verse of verses) {
+          const chapterId =
+            verse.chapter_id ?? getChapterIdFromKey(verse.verse_key);
+          if (!chapterId) continue;
+
+          let pages = map.get(chapterId);
+          if (!pages) {
+            pages = new Set();
+            map.set(chapterId, pages);
+          }
+          pages.add(pageNumber);
+        }
+      }
+
+      const result: Record<number, number[]> = {};
+      for (const [id, pages] of map) {
+        result[id] = Array.from(pages).sort((a, b) => a - b);
+      }
+      return result;
+    })();
+  }
+  return surahPagesSnapshotPromise;
+}
+
+/* =========================
+ * PUBLIC API (SNAPSHOT)
+ * ========================= */
 export async function getSurahList(): Promise<SurahItem[]> {
-  const url = `${BASE}/surat`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed fetch /surah (${res.status})`);
-  const json = await res.json();
-  return json.data;
+  return loadSurahListSnapshot();
 }
 
 export async function getSurahDetail(
   nomor: string | number
 ): Promise<SurahItem & { ayat: AyatItem[] }> {
-  const url = `${BASE}/surat/${nomor}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed fetch /surah/${nomor} (${res.status})`);
-  const json = await res.json();
-  return json.data;
+  const id = Number(nomor);
+  if (!Number.isFinite(id)) {
+    throw new Error(`Invalid surah id (${nomor})`);
+  }
+
+  const map = await loadSurahDetailSnapshot();
+  const surah = map.get(id);
+  if (!surah) {
+    throw new Error(`Surah ${id} not found in snapshot.`);
+  }
+  return surah;
 }
 
 /* =========================
@@ -100,16 +197,13 @@ function getChapterIdFromKey(verseKey: string) {
   return Number.isFinite(id) ? id : null;
 }
 
-function pickStatusErr(res: Response, url: string) {
-  return `${url} (${res.status} ${res.statusText || ""})`.trim();
-}
-
 /* =========================
- * CACHES (IN-MEMORY)
- * NOTE: Works per runtime instance (good enough for SSR / edge-ish).
+ * CACHES
  * ========================= */
-const surahDetailCache = new Map<number, Promise<SurahItem & { ayat: AyatItem[] }>>();
-const surahPagesCache = new Map<number, Promise<number[]>>();
+const surahDetailCache = new Map<
+  number,
+  Promise<SurahItem & { ayat: AyatItem[] }>
+>();
 
 async function getSurahDetailCached(chapterId: number) {
   const existing = surahDetailCache.get(chapterId);
@@ -122,11 +216,14 @@ async function getSurahDetailCached(chapterId: number) {
 
 export function clearQuranCaches() {
   surahDetailCache.clear();
-  surahPagesCache.clear();
+  surahListSnapshotPromise = null;
+  surahDetailSnapshotPromise = null;
+  pageIndexSnapshotPromise = null;
+  surahPagesSnapshotPromise = null;
 }
 
 /* =========================
- * QURAN.COM: INDEX ONLY
+ * QURAN PAGE INDEX (SNAPSHOT)
  * ========================= */
 export type GetPageIndexOptions = {
   pageNumber: number;
@@ -135,58 +232,30 @@ export type GetPageIndexOptions = {
 export async function getPageIndex(
   options: GetPageIndexOptions
 ): Promise<QuranPageIndexResponse> {
-  const params = new URLSearchParams();
+  const index = await loadPageIndexSnapshot();
+  const key = String(options.pageNumber);
+  const verses = (index.pages?.[key] ?? []) as QuranPageVerseIndex[];
 
-  // Keep it LIGHT: only fields needed for indexing/mapping
-  params.set(
-    "fields",
-    ["chapter_id", "verse_key", "verse_number", "juz_number", "page_number"].join(",")
-  );
-
-  const url = `${PAGE_BASE}/verses/by_page/${options.pageNumber}?${params.toString()}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed fetch index ${pickStatusErr(res, url)}`);
-
-  const json = await res.json();
   return {
-    verses: (json.verses ?? []) as QuranPageVerseIndex[],
-    pagination: json.pagination as QuranComPagination,
+    verses,
+    pagination: {
+      per_page: verses.length,
+      current_page: 1,
+      total_pages: 1,
+      total_records: verses.length,
+    },
   };
 }
 
 export async function getSurahPageNumbers(
   chapterId: number
 ): Promise<number[]> {
-  const existing = surahPagesCache.get(chapterId);
-  if (existing) return existing;
-
-  const promise = (async () => {
-    const params = new URLSearchParams();
-    params.set(
-      "fields",
-      ["chapter_id", "verse_key", "verse_number", "page_number"].join(",")
-    );
-    params.set("per_page", "300");
-
-    const url = `${PAGE_BASE}/verses/by_chapter/${chapterId}?${params.toString()}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed fetch chapter ${pickStatusErr(res, url)}`);
-
-    const json = await res.json();
-    const verses = (json.verses ?? []) as QuranPageVerseIndex[];
-    const pages = new Set<number>();
-    for (const verse of verses) {
-      if (verse.page_number) pages.add(verse.page_number);
-    }
-    return Array.from(pages).sort((a, b) => a - b);
-  })();
-
-  surahPagesCache.set(chapterId, promise);
-  return promise;
+  const pagesBySurah = await loadSurahPagesSnapshot();
+  return pagesBySurah[chapterId] ?? [];
 }
 
 /* =========================
- * MAIN: PAGE_BASE index, BASE content
+ * MAIN: PAGE INDEX + SURAH SNAPSHOT
  * ========================= */
 function getUniqueChapterIdsFromIndex(verses: QuranPageVerseIndex[]) {
   const ids = new Set<number>();
@@ -200,7 +269,6 @@ function getUniqueChapterIdsFromIndex(verses: QuranPageVerseIndex[]) {
 export async function getQuranPageData(
   pageNumber: number
 ): Promise<QuranPageData> {
-  // 1) Indexing: Quran.com (page -> list verse refs)
   const pageIndex = await getPageIndex({ pageNumber });
 
   const versesIndex = pageIndex.verses ?? [];
@@ -215,7 +283,6 @@ export async function getQuranPageData(
     };
   }
 
-  // 2) Fetch content per-surah from equran.id (cached)
   const surahIds = getUniqueChapterIdsFromIndex(versesIndex);
 
   const surahDetails = await Promise.all(
@@ -226,14 +293,12 @@ export async function getQuranPageData(
     surahDetails.map((s) => [s.nomor, s])
   );
 
-  // 3) Build surah meta for the page
   const surahs = surahIds.map((id) => {
     const surah = surahMap.get(id);
     const name = surah?.namaLatin ?? surah?.nama ?? `Surah ${id}`;
     return { name, number: id };
   });
 
-  // 4) Resolve each indexed verse into actual ayat content from equran
   const verses: PageAyat[] = versesIndex
     .map((v) => {
       const chapterId = v.chapter_id ?? getChapterIdFromKey(v.verse_key);

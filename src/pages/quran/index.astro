@@ -3,7 +3,7 @@ import Layout from "@/layouts/layout.astro";
 import QuranPage from "@/components/quran/quran-page";
 import { getSurahList } from "@/lib/api/quran";
 
-export const prerender = false;
+export const prerender = true;
 
 const surah = await getSurahList();
 

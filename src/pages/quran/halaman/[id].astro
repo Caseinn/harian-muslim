@@ -3,7 +3,13 @@ import Layout from "@/layouts/layout.astro";
 import PageAudioPlayer from "@/components/quran/halaman/audio-player";
 import { getQuranPageData } from "@/lib/api/quran";
 
-export const prerender = false;
+export const prerender = true;
+
+export async function getStaticPaths() {
+  return Array.from({ length: 604 }, (_, index) => ({
+    params: { id: String(index + 1) },
+  }));
+}
 
 const { id } = Astro.params;
 if (!id) throw new Error("Missing page id");

@@ -20,6 +20,7 @@ export default function QuranPage({
   const {
     emptyLabel,
     lastRead,
+    lastReadResolved,
     lastReadHref,
     listDescription,
     listTitle,
@@ -52,7 +53,11 @@ export default function QuranPage({
               </p>
             </div>
 
-            <LastReadCard lastRead={lastRead} href={lastReadHref} />
+            <LastReadCard
+              lastRead={lastRead}
+              href={lastReadHref}
+              resolved={lastReadResolved}
+            />
           </div>
 
           <div className="my-6 ornament-divider" />

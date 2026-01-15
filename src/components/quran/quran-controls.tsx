@@ -20,7 +20,7 @@ export default function QuranControls({
         <Button
           type="button"
           variant={mode === "surah" ? "default" : "ghost"}
-          className="w-full md:w-auto"
+          className="w-full md:w-auto cursor-pointer"
           onClick={() => onModeChange("surah")}
         >
           Per Surah
@@ -28,7 +28,7 @@ export default function QuranControls({
         <Button
           type="button"
           variant={mode === "page" ? "default" : "ghost"}
-          className="w-full md:w-auto"
+          className="w-full md:w-auto cursor-pointer"
           onClick={() => onModeChange("page")}
         >
           Per Halaman

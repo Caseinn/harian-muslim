@@ -3,7 +3,14 @@ import Layout from "@/layouts/layout.astro";
 import AudioPlayer from "@/components/quran/[id]/audio-player";
 import { getSurahDetail, getSurahList } from "@/lib/api/quran";
 
-export const prerender = false;
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const surahList = await getSurahList();
+  return surahList.map((surah) => ({
+    params: { id: String(surah.nomor) },
+  }));
+}
 
 const { id } = Astro.params;
 if (!id) throw new Error("Missing surah id");

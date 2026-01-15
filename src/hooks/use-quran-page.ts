@@ -83,6 +83,7 @@ export default function useQuranPage({
   const [query, setQuery] = useState(initialQuery);
   const [listPage, setListPage] = useState(1);
   const [lastRead, setLastRead] = useState<LastRead | null>(null);
+  const [lastReadResolved, setLastReadResolved] = useState(false);
   const [pageMeta, setPageMeta] = useState<Record<number, PageMeta>>({});
   const pageMetaInFlight = useRef<Set<number>>(new Set());
   const [surahPagesById, setSurahPagesById] = useState<
@@ -91,12 +92,31 @@ export default function useQuranPage({
   const surahPagesInFlight = useRef<Set<number>>(new Set());
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    const urlQuery = url.searchParams.get("q") ?? "";
+    const urlMode = url.searchParams.get("mode");
+    const nextMode =
+      urlMode === "page" || urlMode === "surah" ? urlMode : null;
+
+    if (urlQuery && urlQuery !== query) {
+      setQuery(urlQuery);
+    }
+    if (nextMode && nextMode !== mode) {
+      setMode(nextMode);
+    }
+  }, []);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as LastRead;
-      if (parsed?.id && parsed?.type) setLastRead(parsed);
+      if (raw) {
+        const parsed = JSON.parse(raw) as LastRead;
+        if (parsed?.id && parsed?.type) setLastRead(parsed);
+      }
     } catch {}
+    setLastReadResolved(true);
   }, []);
 
   useEffect(() => {
@@ -315,6 +335,7 @@ export default function useQuranPage({
   return {
     emptyLabel,
     lastRead,
+    lastReadResolved,
     lastReadHref,
     listDescription,
     listPage,

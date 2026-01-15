@@ -1,5 +1,4 @@
 ---
-
 import Layout from "@/layouts/layout.astro";
 import PageAudioPlayer from "@/components/quran/halaman/audio-player";
 import { getQuranPageData } from "@/lib/api/quran";
@@ -21,8 +20,8 @@ const nextPage = pageNumber < 604 ? pageNumber + 1 : null;
 
 const surahLabel =
   page.meta.surahs?.length
-    ? page.meta.surahs.map((s) => `${s.name} (${s.number})`).join(" • ")
-    : "—";
+    ? page.meta.surahs.map((s) => `${s.name} (${s.number})`).join(" - ")
+    : "-";
 
 const surahNameById = new Map(
   (page.meta.surahs ?? []).map((s) => [s.number, s.name])
@@ -45,94 +44,104 @@ const surahNameById = new Map(
 
 
 <Layout
-  title={`Al-Qur’an — Halaman ${pageNumber}`}
-  description={`Halaman ${pageNumber} • Juz ${page.meta.juz} • ${surahLabel}`}
+  title={`Al-Qur'an - Halaman ${pageNumber}`}
+  description={`Halaman ${pageNumber} - Juz ${page.meta.juz} - ${surahLabel}`}
 >
-  <main class="mx-auto w-full max-w-4xl px-4 py-10 md:px-6">
-    <header class="mb-6">
-      <p class="text-xs font-medium tracking-wide text-muted-foreground">
-        HALAMAN {pageNumber} • JUZ {page.meta.juz || "-"}
-      </p>
-      <h1 class="mt-2 text-2xl font-semibold">Tampilan Halaman Mushaf</h1>
-      <p class="mt-2 text-sm text-muted-foreground">{surahLabel}</p>
-    </header>
+  <main class="mx-auto w-full max-w-4xl px-4 py-12 md:px-6">
+    <section class="illumination-panel p-6 md:p-8">
+      <div class="relative z-10 space-y-4">
+        <p class="ink-eyebrow text-muted-foreground">
+          Halaman {pageNumber} - Juz {page.meta.juz || "-"}
+        </p>
+        <h1 class="text-2xl font-semibold md:text-3xl">
+          Tampilan Halaman Mushaf
+        </h1>
+        <p class="text-sm text-muted-foreground">{surahLabel}</p>
 
-    <div class="mb-6 flex items-center justify-between">
-      {prevPage ? (
-        <a
-          href={`/quran/halaman/${prevPage}`}
-          class="rounded-lg border border-border/60 px-3 py-2 text-sm transition hover:border-border hover:bg-accent"
-        >
-          Sebelumnya
-        </a>
-      ) : null}
-
-      {nextPage ? (
-        <a
-          href={`/quran/halaman/${nextPage}`}
-          class="rounded-lg border border-border/60 px-3 py-2 text-sm transition hover:border-border hover:bg-accent"
-        >
-          Berikutnya
-        </a>
-      ) : null}
-    </div>
+        <div class="mt-8">
+          <PageAudioPlayer client:idle verses={page.verses} />
+        </div>
+      </div>
+    </section>
 
     {page.verses.length ? (
       <>
-        <div class="mb-6">
-          <PageAudioPlayer client:idle verses={page.verses} />
+        <div class="pt-6 flex items-center justify-between gap-3">
+          {prevPage ? (
+            <a
+              href={`/quran/halaman/${prevPage}`}
+              class="rounded-full border border-border/60 bg-background/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground transition hover:border-primary/50 hover:bg-background/80"
+            >
+              Sebelumnya
+            </a>
+          ) : (
+            <span />
+          )}
+
+          {nextPage ? (
+            <a
+              href={`/quran/halaman/${nextPage}`}
+              class="rounded-full border border-border/60 bg-background/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground transition hover:border-primary/50 hover:bg-background/80"
+            >
+              Berikutnya
+            </a>
+          ) : (
+            <span />
+          )}
         </div>
 
-        <section class="rounded-2xl border border-border/60 bg-card p-6">
-        <div class="text-right text-3xl leading-loose">
-          {page.verses.map((v) => (
-            <span>
-              {v.teksArab}{" "}
-              <span class="mx-1 align-middle text-xs text-muted-foreground">
-                ({v.verseKey})
-              </span>{" "}
-            </span>
-          ))}
-        </div>
-
-        <div class="mt-8 grid gap-6 border-t border-border/60 pt-6 md:grid-cols-2">
-          <div class="space-y-3">
-            <h2 class="text-sm font-semibold">Latin</h2>
-            <div class="space-y-3 text-sm text-muted-foreground">
-              {page.verses.map((v) => (
-                <div class="space-y-1">
-                  <span class="text-xs text-muted-foreground">
-                    Surah {surahNameById.get(v.chapterId) ?? `Surah ${v.chapterId}`} Ayat{" "}
-                    {v.verseKey.split(":")[1]}
-                  </span>
-                  <p>{v.teksLatin}</p>
-                </div>
-              ))}
-            </div>
+        <section class="mt-6 rounded-2xl border border-border/60 bg-background/70 p-6">
+          <div class="text-right text-3xl leading-loose" lang="ar" dir="rtl">
+            {page.verses.map((v) => (
+              <span>
+                {v.teksArab}{" "}
+                <span class="mx-1 align-middle text-xs text-muted-foreground">
+                  ({v.verseKey})
+                </span>{" "}
+              </span>
+            ))}
           </div>
 
-          <div class="space-y-3">
-            <h2 class="text-sm font-semibold">Terjemahan</h2>
-            <div class="space-y-3 text-sm leading-relaxed">
-              {page.verses.map((v) => (
-                <div class="space-y-1">
-                  <span class="text-xs text-muted-foreground">
-                    Surah {surahNameById.get(v.chapterId) ?? `Surah ${v.chapterId}`} Ayat{" "}
-                    {v.verseKey.split(":")[1]}
-                  </span>
-                  <p>{v.teksIndonesia}</p>
-                </div>
-              ))}
+          <div class="mt-8 grid gap-6 border-t border-border/60 pt-6 md:grid-cols-2">
+            <div class="space-y-3">
+              <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                Latin
+              </h2>
+              <div class="space-y-3 text-sm text-muted-foreground">
+                {page.verses.map((v) => (
+                  <div class="space-y-1">
+                    <span class="text-xs text-muted-foreground">
+                      Surah {surahNameById.get(v.chapterId) ?? `Surah ${v.chapterId}`} Ayat{" "}
+                      {v.verseKey.split(":")[1]}
+                    </span>
+                    <p>{v.teksLatin}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                Terjemahan
+              </h2>
+              <div class="space-y-3 text-sm leading-relaxed">
+                {page.verses.map((v) => (
+                  <div class="space-y-1">
+                    <span class="text-xs text-muted-foreground">
+                      Surah {surahNameById.get(v.chapterId) ?? `Surah ${v.chapterId}`} Ayat{" "}
+                      {v.verseKey.split(":")[1]}
+                    </span>
+                    <p>{v.teksIndonesia}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       </>
     ) : (
-      <div class="rounded-2xl border border-border/60 bg-card p-6">
-        <p class="text-sm text-muted-foreground">
-          Tidak ada data untuk halaman ini.
-        </p>
+      <div class="mt-6 rounded-2xl border border-border/60 bg-background/70 p-6">
+        <p class="text-sm text-muted-foreground">Tidak ada data untuk halaman ini.</p>
       </div>
     )}
   </main>

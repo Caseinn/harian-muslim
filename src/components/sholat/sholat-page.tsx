@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import LocationPicker from "@/components/sholat/location-picker";
 import MonthlyScheduleCard from "@/components/sholat/monthly-schedule-card";
@@ -36,11 +35,11 @@ export default function SholatPage() {
   const todayISO = getWibISO(new Date());
 
   return (
-    <section className="py-10 md:py-12">
-      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold md:text-3xl">Jadwal Sholat</h1>
-          <p className="text-sm text-muted-foreground">
+    <section>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-3">
+          <h1 className="text-3xl font-semibold md:text-4xl">Jadwal Sholat</h1>
+          <p className="max-w-xl text-sm text-muted-foreground">
             Waktu sholat harian berdasarkan lokasi yang dipilih.
           </p>
         </div>
@@ -78,12 +77,6 @@ export default function SholatPage() {
                   ? "Notifikasi Aktif"
                   : "Aktifkan Notifikasi"}
             </Button>
-          ) : null}
-
-          {monthLabel ? (
-            <Badge variant="secondary" className="text-xs">
-              {monthLabel}
-            </Badge>
           ) : null}
         </div>
 

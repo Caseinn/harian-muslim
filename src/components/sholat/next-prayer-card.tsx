@@ -14,22 +14,32 @@ export default function NextPrayerCard({
   countdown,
 }: Props) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Sholat Berikutnya</CardTitle>
+    <Card className="illumination-panel overflow-hidden">
+      <CardHeader className="border-b border-border/60">
+        <CardTitle className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+          Sholat Berikutnya
+        </CardTitle>
       </CardHeader>
-      <CardContent className="text-center">
-        <p className="text-sm text-muted-foreground">Berikutnya</p>
-        <p className="text-2xl font-bold">{nextPrayer?.label ?? "-"}</p>
-        <p className="text-3xl font-bold text-primary">
-          {nextPrayer?.time ?? "--:--"}
-        </p>
-        <p className="py-2 text-xs text-muted-foreground">
+      <CardContent className="space-y-5 text-center">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Berikutnya
+          </p>
+          <p className="text-4xl font-semibold text-primary">
+            {nextPrayer?.time ?? "--:--"}
+          </p>
+          <p className="text-base font-semibold">{nextPrayer?.label ?? "-"}</p>
+        </div>
+
+        <div className="rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-xs text-muted-foreground">
           Mulai dalam <span className="font-semibold">{countdown}</span>
-        </p>
-        <div className="border-t pt-2 text-sm text-muted-foreground flex justify-between">
+        </div>
+
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>{followingPrayer?.label ?? "-"}</span>
-          <span>{followingPrayer?.time ?? "--:--"}</span>
+          <span className="font-semibold text-foreground">
+            {followingPrayer?.time ?? "--:--"}
+          </span>
         </div>
       </CardContent>
     </Card>

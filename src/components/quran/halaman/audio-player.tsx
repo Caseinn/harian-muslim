@@ -170,18 +170,20 @@ export default function PageAudioPlayer({ verses }: Props) {
 
   if (!verses.length || !availableQori.length) {
     return (
-      <div className="rounded-2xl border border-border/60 bg-card/70 p-4 text-sm text-muted-foreground">
+      <div className="rounded-2xl border border-border/60 bg-background/70 p-4 text-sm text-muted-foreground">
         Audio ayat belum tersedia untuk halaman ini.
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/70 p-4">
+    <div className="rounded-2xl border border-border/60 bg-background/70 p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-semibold">Audio Halaman</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Audio Halaman
+          </p>
+          <p className="text-sm text-muted-foreground">
             Putar ayat otomatis satu per satu.
           </p>
         </div>
@@ -220,10 +222,10 @@ export default function PageAudioPlayer({ verses }: Props) {
             type="button"
             onClick={() => handleVerseSelect(index)}
             className={cn(
-              "rounded-md border px-2.5 py-1 text-xs transition",
+              "rounded-full border px-3 py-1 text-xs transition",
               index === currentIndex
                 ? "border-primary bg-primary text-primary-foreground"
-                : "border-border/60 hover:border-border"
+                : "border-border/60 hover:border-primary/50"
             )}
           >
             {verse.verseKey}

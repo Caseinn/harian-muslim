@@ -15,12 +15,12 @@ export default function QuranControls({
   onQueryChange,
 }: Props) {
   return (
-    <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div className="inline-flex w-full rounded-2xl border border-border/60 bg-background/40 p-1 md:w-auto">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="inline-flex w-full rounded-full border border-border/60 bg-background/70 p-1 md:w-auto">
         <Button
           type="button"
           variant={mode === "surah" ? "default" : "ghost"}
-          className="w-full rounded-xl md:w-auto"
+          className="w-full md:w-auto"
           onClick={() => onModeChange("surah")}
         >
           Per Surah
@@ -28,7 +28,7 @@ export default function QuranControls({
         <Button
           type="button"
           variant={mode === "page" ? "default" : "ghost"}
-          className="w-full rounded-xl md:w-auto"
+          className="w-full md:w-auto"
           onClick={() => onModeChange("page")}
         >
           Per Halaman
@@ -41,8 +41,8 @@ export default function QuranControls({
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder={
             mode === "surah"
-              ? "Cari surah: nama / arti / nomor"
-              : "Cari halaman atau surah"
+              ? "Cari Surah: Nama / Arti / Nomor"
+              : "Cari Halaman Atau Surah"
           }
         />
       </div>

@@ -1,72 +1,65 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { FiBookOpen, FiClock, FiHeart } from "react-icons/fi";
 
 const features = [
   {
     icon: FiBookOpen,
-    title: "Al-Qur’an",
-    desc: "Teks Arab, latin, terjemahan Indonesia, dan audio per ayat.",
+    title: "Al-Qur'an",
+    desc: "Tampilan ayat yang bersih dan nyaman dibaca, lengkap dengan latin serta audio.",
   },
   {
     icon: FiClock,
     title: "Jadwal Sholat",
-    desc: "Waktu sholat akurat sesuai lokasi pengguna.",
+    desc: "Penanda waktu presisi yang mengikuti lokasimu, menjaga sholat tetap di awal waktu.",
   },
   {
     icon: FiHeart,
     title: "Doa Harian",
-    desc: "Kumpulan doa berdasarkan konteks dan kebutuhan.",
+    desc: "Rangkaian doa ringkas untuk menyertakan keberkahan dalam setiap aktivitasmu.",
   },
 ];
 
 export default function FeaturesSection() {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="mx-auto max-w-3xl text-center mb-12">
-        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Fitur Utama
-        </p>
-        <h2 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl">
-          Semua yang dibutuhkan, tanpa distraksi
-        </h2>
-        <p className="mt-4 text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Fokus pada inti: membaca, memahami, dan menjalankan ibadah harian dengan pengalaman yang bersih dan nyaman.
-        </p>
-      </div>
+    <section>
+      <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div className="space-y-4">
+          <p className="ink-eyebrow text-muted-foreground">Pondasi Harian</p>
+          <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
+          Tiga Pilar Untuk Rutinitas Yang Lebih Terjaga.
+          </h2>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+          Membangun kebiasaan baik dimulai dari kemudahan. Akses inti ibadahmu 
+          dengan cepat, pahami maknanya, dan amalkan dalam keseharian tanpa 
+          hambatan antarmuka.
+          </p>
+        </div>
 
-      {/* Cards */}
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-6 md:grid-cols-3">
-          {features.map((f) => {
-            const Icon = f.icon;
+        <div className="space-y-6">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            const indexLabel = String(index + 1).padStart(2, "0");
             return (
-              <Card
-                key={f.title}
-                className="
-                  border border-border/50 bg-card/80 backdrop-blur-sm
-                  transition-all duration-300
-                  hover:-translate-y-1 hover:shadow-md hover:border-border
-                  rounded-xl
-                "
+              <div
+                key={feature.title}
+                className="flex flex-col gap-3 border-b border-border/60 pb-6 last:border-0"
               >
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    {/* Icon container – more refined */}
-                    <div className="inline-flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <Icon className="size-6" />
-                    </div>
-
-                    {/* Text content */}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-semibold text-foreground">{f.title}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                        {f.desc}
-                      </p>
-                    </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex size-12 items-center justify-center rounded-full border border-secondary/40 bg-secondary/10 text-secondary">
+                    <Icon className="size-5" />
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                      {indexLabel}
+                    </p>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {feature.title}
+                    </h3>
+                  </div>
+                </div>
+                <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
+                  {feature.desc}
+                </p>
+              </div>
             );
           })}
         </div>

@@ -69,18 +69,20 @@ export default function AudioPlayer({ audioFull }: Props) {
 
   if (!availableQori.length) {
     return (
-      <div className="rounded-2xl border border-border/60 bg-card/70 p-4 text-sm text-muted-foreground">
+      <div className="rounded-2xl border border-border/60 bg-background/70 p-4 text-sm text-muted-foreground">
         Audio belum tersedia untuk surah ini.
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/70 p-4">
+    <div className="rounded-2xl border border-border/60 bg-background/70 p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-semibold">Audio Surah</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Audio Surah
+          </p>
+          <p className="text-sm text-muted-foreground">
             Pilih qori dan putar audio lengkap.
           </p>
         </div>

@@ -39,14 +39,11 @@ export default function QuranPage({
 
   return (
     <>
-      <section className="py-10 md:py-12">
-        <div className="rounded-3xl border border-border/60 bg-card/70 p-6 md:p-8">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-2">
-              <p className="text-xs font-medium tracking-wide text-muted-foreground">
-                AL-QUR'AN
-              </p>
-              <h1 className="text-2xl font-semibold md:text-3xl">
+      <section className="pb-12 sm:pb-16">
+        <div className="illumination-panel p-6 sm:p-8">
+          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-3">
+              <h1 className="text-3xl font-semibold md:text-4xl">
                 Baca Al-Qur&apos;an
               </h1>
               <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
@@ -55,9 +52,10 @@ export default function QuranPage({
               </p>
             </div>
 
-            {/* Last read */}
             <LastReadCard lastRead={lastRead} href={lastReadHref} />
           </div>
+
+          <div className="my-6 ornament-divider" />
 
           <QuranControls
             mode={mode}
@@ -68,14 +66,18 @@ export default function QuranPage({
         </div>
       </section>
 
-      <section className="pb-10">
-        <header className="mb-6">
-          <h2 className="text-xl font-semibold">{listTitle}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{listDescription}</p>
+      <section className="pb-12">
+        <header className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold">{listTitle}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {listDescription}
+            </p>
+          </div>
         </header>
 
         {totalItems === 0 ? (
-          <div className="rounded-2xl border border-border/60 bg-card p-6 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-6 text-sm text-muted-foreground">
             {emptyLabel}
           </div>
         ) : mode === "surah" ? (

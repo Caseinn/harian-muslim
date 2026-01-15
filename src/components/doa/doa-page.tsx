@@ -170,13 +170,16 @@ export default function DoaPage({ items }: Props) {
               variant="outline"
               role="combobox"
               aria-expanded={groupOpen}
-              className="w-full justify-between sm:w-70"
+              className="h-10 w-full justify-between sm:w-[280px]"
             >
               <span className="truncate">{activeGroupLabel}</span>
               <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-70 p-0" align="end">
+          <PopoverContent
+            className="w-[280px] rounded-xl border border-border/60 bg-background/95 p-0"
+            align="end"
+          >
             <Command>
               <CommandInput placeholder="Cari Grup..." />
               <CommandList>
@@ -222,11 +225,11 @@ export default function DoaPage({ items }: Props) {
         </Popover>
       </div>
 
-      <Accordion type="single" collapsible className="space-y-5">
+      <Accordion type="single" collapsible className="space-y-4">
         {groupedItems.map((group) => (
           <Fragment key={group.label}>
             {showGroupHeaders ? (
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                 {group.label}
               </div>
             ) : null}
@@ -237,8 +240,8 @@ export default function DoaPage({ items }: Props) {
                   value={`doa-${item.id}`}
                   className="border-0"
                 >
-                  <Card className="gap-0 border-border/60 py-0">
-                    <AccordionTrigger className="px-5 py-4 text-left hover:no-underline">
+                  <Card className="gap-0 border-border/60 bg-background/70 py-0 shadow-sm">
+                    <AccordionTrigger className="px-5 py-4 text-left text-sm font-semibold hover:no-underline">
                       <div className="flex w-full flex-1 flex-col gap-2">
                         <div className="text-base font-semibold text-foreground">
                           {item.nama}

@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import useScrollLock from "@/hooks/use-scroll-lock";
 import type { ShalatKabKotaItem } from "@/lib/api/sholat";
 import type { ShalatLocation } from "@/hooks/use-sholat-page";
 
@@ -39,16 +40,23 @@ export default function LocationPicker({
   detecting,
 }: Props) {
   const locationLabel = location.kabkota || "Pilih kab/kota";
+  useScrollLock(open);
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-full justify-between sm:w-[220px]">
+        <Button
+          variant="outline"
+          className="h-10 w-full justify-between sm:w-[220px]"
+        >
           {locationLabel}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[240px] p-0" align="end">
+      <PopoverContent
+        className="w-[240px] rounded-xl border border-border/60 bg-background/95 p-0"
+        align="end"
+      >
         <Command>
           <CommandInput placeholder="Cari kab/kota..." />
           <CommandList>

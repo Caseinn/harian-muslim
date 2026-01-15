@@ -269,20 +269,18 @@ export async function getUpcomingPrayersWithFallback(args: {
   if (!schedule.length) return [];
 
   const upcoming = getUpcomingPrayers(schedule, now);
-  const shouldAppendTomorrowSubuh =
-    upcoming.length === 1 && upcoming[0]?.key === "isya";
-
-  if (upcoming.length >= 2 || (upcoming.length === 1 && !shouldAppendTomorrowSubuh)) {
+  if (upcoming.length >= 2) {
     return upcoming;
   }
 
-  const tomorrow = new Date(now.getTime());
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowISO = getWibISO(tomorrow);
-  let tomorrowRow = getRowByISO(schedule, tomorrowISO);
+  const baseNext = upcoming[0] ?? null;
+  const targetDate = new Date(now.getTime());
+  targetDate.setDate(targetDate.getDate() + 1);
+  const targetISO = baseNext?.dayOffset === 1 ? baseNext.dateISO : getWibISO(targetDate);
+  let targetRow = getRowByISO(schedule, targetISO);
 
-  if (!tomorrowRow) {
-    const [year, month] = tomorrowISO.split("-").map(Number);
+  if (!targetRow) {
+    const [year, month] = targetISO.split("-").map(Number);
     if (!Number.isFinite(year) || !Number.isFinite(month)) {
       return upcoming.length ? upcoming : [];
     }
@@ -293,35 +291,41 @@ export async function getUpcomingPrayersWithFallback(args: {
         bulan: month,
         tahun: year,
       });
-      tomorrowRow = getRowByISO(data.jadwal ?? [], tomorrowISO);
+      targetRow = getRowByISO(data.jadwal ?? [], targetISO);
     } catch {
       return upcoming.length ? upcoming : [];
     }
   }
 
-  if (!tomorrowRow) return upcoming.length ? upcoming : [];
+  if (!targetRow) return upcoming.length ? upcoming : [];
 
-  const tomorrowPrayers = PRAYER_ORDER.map((prayer) => {
-    const time = tomorrowRow[prayer.key];
-    const dateTime = getWibDateTime(tomorrowISO, time);
+  const targetPrayers = PRAYER_ORDER.map((prayer) => {
+    const time = targetRow[prayer.key];
+    const dateTime = getWibDateTime(targetISO, time);
     if (!dateTime) return null;
     return {
       key: prayer.key,
       label: prayer.label,
       time,
-      dateISO: tomorrowISO,
+      dateISO: targetISO,
       dateTime,
       dayOffset: 1,
     };
   }).filter(Boolean) as NextPrayer[];
 
-  if (!tomorrowPrayers.length) return upcoming.length ? upcoming : [];
+  if (!targetPrayers.length) return upcoming.length ? upcoming : [];
 
-  if (shouldAppendTomorrowSubuh) {
-    return [...upcoming, tomorrowPrayers[0]];
+  if (!baseNext) {
+    return targetPrayers;
   }
 
-  return tomorrowPrayers;
+  if (baseNext.dayOffset === 1) {
+    const index = PRAYER_ORDER.findIndex((prayer) => prayer.key === baseNext.key);
+    const following = index >= 0 ? targetPrayers[index + 1] : undefined;
+    return following ? [baseNext, following] : [baseNext];
+  }
+
+  return [baseNext, targetPrayers[0]];
 }
 
 export function formatCountdown(ms: number) {

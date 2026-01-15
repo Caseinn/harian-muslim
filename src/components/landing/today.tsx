@@ -2,7 +2,6 @@ import * as React from "react";
 import { Check, ChevronsUpDown, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -34,6 +33,7 @@ import {
   type ShalatKabKotaItem,
 } from "@/lib/api/sholat";
 import { cn } from "@/lib/utils";
+import useScrollLock from "@/hooks/use-scroll-lock";
 
 const DEFAULT_PROVINSI = "DKI Jakarta";
 const DEFAULT_KABKOTA = "Kota Jakarta";
@@ -195,6 +195,8 @@ export default function TodaySection() {
   const [locationOpen, setLocationOpen] = React.useState(false);
   const [detectingLocation, setDetectingLocation] = React.useState(false);
   const detectInFlightRef = React.useRef(false);
+
+  useScrollLock(locationOpen);
 
   const [nextPrayer, setNextPrayer] = React.useState<NextPrayer | null>(null);
   const [followingPrayer, setFollowingPrayer] =
@@ -453,188 +455,221 @@ export default function TodaySection() {
   const locationLabel = location.kabkota || "Pilih kab/kota";
 
   return (
-    <section className="py-16">
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold">Fokus Hari Ini</h2>
-        <p className="text-sm text-muted-foreground">
-          Ringkasan ibadah yang bisa langsung digunakan hari ini
+    <section className="py-16 sm:py-20">
+      <div className="mb-8 space-y-3">
+        <p className="ink-eyebrow text-muted-foreground">Sekilas Hari Ini</p>
+        <h2 className="text-3xl font-semibold sm:text-4xl">
+          Jalani Hari Dengan Lebih Terarah.
+        </h2>
+        <p className="max-w-xl text-sm text-muted-foreground">
+          Inspirasi dan panduan harian untuk menemani setiap langkahmu dari pagi hingga malam.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* TERAKHIR DIBACA */}
-        <Card className="flex flex-col border-border/60 bg-card/80">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Terakhir Dibaca</CardTitle>
-              {lastReadView ? (
-                <Badge variant="secondary" className="text-[11px]">
-                  {lastReadView.mode}
-                </Badge>
-              ) : null}
-            </div>
-          </CardHeader>
-
-          <CardContent className="flex flex-1 flex-col">
-            {lastReadView ? (
-              <>
-                <div className="space-y-1">
-                  <p className="text-xl font-semibold leading-tight tracking-tight">
-                    {lastReadView.title}
-                  </p>
-
-                  {lastReadView.arab ? (
-                    <p className="text-right text-2xl font-semibold leading-none text-primary">
-                      {lastReadView.arab}
-                    </p>
-                  ) : null}
-
-                  {lastReadView.meta ? (
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {lastReadView.meta}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Lanjutkan dari bacaan terakhir Anda
-                    </p>
-                  )}
-                </div>
-
-                <div className="my-4 h-px w-full bg-border/60" />
-
-                <Button asChild className="mt-auto w-full">
-                  <a href={lastReadView.href}>Lanjutkan Bacaan</a>
-                </Button>
-              </>
-            ) : (
-              <div className="flex flex-1 flex-col justify-between gap-4">
-                <div className="space-y-2">
-                  <p className="text-lg font-semibold leading-tight">
-                    Belum ada bacaan
-                  </p>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Mulai membaca dari daftar surah atau mode halaman.
-                  </p>
-                </div>
-
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <Button asChild className="w-full">
-                    <a href="/quran">Buka Surah</a>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full">
-                    <a href="/quran/halaman/1">Mode Halaman</a>
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* JADWAL SHOLAT */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between text-base">
-              Jadwal Sholat
-              <Popover open={locationOpen} onOpenChange={setLocationOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-[170px] justify-between"
-                  >
-                    {locationLabel}
-                    <ChevronsUpDown className="opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-
-                <PopoverContent className="w-[220px] p-0" align="end">
-                  <Command>
-                    {/* keep open while search */}
-                    <CommandInput placeholder="Cari kab/kota..." />
-                    <CommandList>
-                      <CommandEmpty>Tidak ditemukan.</CommandEmpty>
-                      <CommandGroup heading="Lokasi otomatis">
-                        <CommandItem
-                          value="deteksi lokasi"
-                          onSelect={() => {
-                            detectLocation();
-                            setLocationOpen(false);
-                          }}
-                          disabled={detectingLocation}
-                        >
-                          <MapPin />
-                          {detectingLocation
-                            ? "Mendeteksi lokasi..."
-                            : "Deteksi lokasi otomatis"}
-                        </CommandItem>
-                      </CommandGroup>
-                      <CommandSeparator />
-                      <CommandGroup heading="Kab/Kota">
-                        {locationOptions.map((item) => {
-                          const selected =
-                            item.kabkota === location.kabkota &&
-                            item.provinsi === location.provinsi;
-                          return (
-                            <CommandItem
-                              key={item.value}
-                              value={item.kabkota}
-                              onSelect={() => {
-                                setLocation({
-                                  kabkota: item.kabkota,
-                                  provinsi: item.provinsi,
-                                });
-                                setLocationOpen(false);
-                              }}
-                            >
-                              {item.kabkota}
-                              <Check
-                                className={cn(
-                                  "ml-auto",
-                                  selected ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="text-center">
-            <p className="text-sm text-muted-foreground">Sholat Berikutnya</p>
-            <p className="text-2xl font-bold">{nextPrayer?.label ?? "—"}</p>
-            <p className="text-3xl font-bold text-primary">
-              {nextPrayer?.time ?? "--:--"}
-            </p>
-            <p className="py-2 text-xs text-muted-foreground">
-              Mulai dalam <span className="font-semibold">{countdown}</span>
-            </p>
-            <div className="border-t pt-2 text-sm text-muted-foreground flex justify-between">
-              <span>{followingPrayer?.label ?? "—"}</span>
-              <span>{followingPrayer?.time ?? "--:--"}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* DOA */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Doa Harian</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-right text-lg leading-relaxed">
-              {dailyDoa?.ar ?? "—"}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {dailyDoa?.idn ?? "—"}
-            </p>
-          </CardContent>
-        </Card>
+<div className="illumination-panel p-6 sm:p-8">
+  <div className="relative z-10 grid gap-6 lg:grid-cols-3 lg:items-stretch">
+    {/* ================== COL 1: LAST READ ================== */}
+    <div className="flex flex-col border-border/60 pt-6">
+      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+        <span>Terakhir dibaca</span>
+        {lastReadView ? (
+          <Badge variant="secondary" className="text-[10px] tracking-[0.2em]">
+            {lastReadView.mode}
+          </Badge>
+        ) : null}
       </div>
+
+      {lastReadView ? (
+        <div className="flex flex-1 flex-col justify-center gap-4">
+          <div className="space-y-2">
+            <p className="text-xl font-semibold leading-tight">
+              {lastReadView.title}
+            </p>
+
+            {lastReadView.arab ? (
+              <p
+                className="text-right text-2xl font-semibold leading-none text-primary"
+                lang="ar"
+                dir="rtl"
+              >
+                {lastReadView.arab}
+              </p>
+            ) : null}
+
+            {lastReadView.meta ? (
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {lastReadView.meta}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Lanjutkan dari bacaan terakhir Anda
+              </p>
+            )}
+          </div>
+
+          <div className="ornament-divider" />
+
+          <Button asChild className="w-full">
+            <a href={lastReadView.href}>Lanjutkan Bacaan</a>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-1 flex-col justify-center gap-4">
+          <div className="space-y-2">
+            <p className="text-lg font-semibold leading-tight">Belum ada bacaan</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Mulai membaca dari daftar surah atau mode halaman.
+            </p>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button asChild className="w-full">
+              <a href="/quran">Buka Surah</a>
+            </Button> 
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* ================== COL 2: SHOLAT ================== */}
+    <div className="flex flex-col space-y-5 border-t border-border/60 pt-6 lg:border-l lg:border-t-0 lg:pl-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Jadwal sholat
+          </p>
+          <p className="text-xs text-muted-foreground">Lokasi aktif</p>
+        </div>
+
+        <Popover open={locationOpen} onOpenChange={setLocationOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 w-[170px] justify-between"
+            >
+              {locationLabel}
+              <ChevronsUpDown className="opacity-50" />
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            className="w-[220px] rounded-xl border border-border/60 bg-background/95 p-0"
+            align="end"
+          >
+            <Command>
+              <CommandInput placeholder="Cari kab/kota..." />
+              <CommandList>
+                <CommandEmpty>Tidak ditemukan.</CommandEmpty>
+
+                <CommandGroup heading="Lokasi otomatis">
+                  <CommandItem
+                    value="deteksi lokasi"
+                    onSelect={() => {
+                      detectLocation();
+                      setLocationOpen(false);
+                    }}
+                    disabled={detectingLocation}
+                  >
+                    <MapPin />
+                    {detectingLocation
+                      ? "Mendeteksi lokasi..."
+                      : "Deteksi lokasi otomatis"}
+                  </CommandItem>
+                </CommandGroup>
+
+                <CommandSeparator />
+
+                <CommandGroup heading="Kab/Kota">
+                  {locationOptions.map((item) => {
+                    const selected =
+                      item.kabkota === location.kabkota &&
+                      item.provinsi === location.provinsi;
+
+                    return (
+                      <CommandItem
+                        key={item.value}
+                        value={item.kabkota}
+                        onSelect={() => {
+                          setLocation({
+                            kabkota: item.kabkota,
+                            provinsi: item.provinsi,
+                          });
+                          setLocationOpen(false);
+                        }}
+                      >
+                        {item.kabkota}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            selected ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      {/* center the main sholat card */}
+      <div className="flex flex-1 flex-col justify-center gap-5">
+        <div className="rounded-2xl border border-border/60 bg-background/70 px-4 py-4 text-center flex flex-col items-center justify-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Berikutnya
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-primary">
+            {nextPrayer?.time ?? "--:--"}
+          </p>
+          <p className="text-sm font-semibold">{nextPrayer?.label ?? "-"}</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Mulai dalam <span className="font-semibold">{countdown}</span>
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>{followingPrayer?.label ?? "-"}</span>
+          <span className="font-semibold text-foreground">
+            {followingPrayer?.time ?? "--:--"}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* ================== COL 3: DOA HARIAN ================== */}
+    <div className="flex flex-col space-y-5 border-t border-border/60 pt-6 lg:border-l lg:border-t-0 lg:pl-6">
+      <div className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+        Doa harian
+      </div>
+
+      {/* always center vertically */}
+      <div className="flex flex-1 flex-col justify-center gap-4">
+        <div className="space-y-3">
+          <p
+            className="text-right text-2xl leading-relaxed text-foreground"
+            lang="ar"
+            dir="rtl"
+          >
+            {dailyDoa?.ar ?? "-"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {dailyDoa?.idn ?? "-"}
+          </p>
+        </div>
+
+        <div className="ornament-divider" />
+
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          Dibaca untuk menenangkan hati
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
     </section>
   );
 }

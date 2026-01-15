@@ -20,10 +20,14 @@ export default function PageGrid({ pages, pageMeta }: Props) {
           <a
             key={page}
             href={`/quran/halaman/${page}`}
-            className="rounded-xl border border-border/60 bg-card/70 p-4 text-center transition hover:border-border min-h-[120px] flex flex-col justify-center gap-3"
+            className="group flex min-h-[120px] flex-col justify-center gap-3 rounded-2xl border border-border/60 bg-background/70 p-4 text-center transition hover:border-primary/50 hover:bg-background/80"
           >
-            <div className="text-xs text-muted-foreground">{juzLabel}</div>
-            <div className="text-2xl font-bold leading-none">{page}</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+              {juzLabel}
+            </div>
+            <div className="text-2xl font-semibold leading-none tabular-nums">
+              {page}
+            </div>
             <div
               className="truncate text-xs text-muted-foreground"
               title={surahLabel}

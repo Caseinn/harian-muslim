@@ -17,5 +17,7 @@ export function applyTheme(theme: Theme) {
   const root = document.documentElement;
   root.classList.toggle("dark", theme === "dark");
   root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+  root.style.backgroundColor = theme === "dark" ? "#0f1a15" : "#f8f9fa";
   localStorage.setItem(STORAGE_KEY, theme);
 }

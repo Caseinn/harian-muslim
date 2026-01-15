@@ -3,15 +3,31 @@
 import * as React from "react";
 import { Switch } from "@/components/ui/switch";
 import { Moon, Sun } from "lucide-react";
-import { getInitialTheme, applyTheme } from "@/lib/theme";
+import { applyTheme } from "@/lib/theme";
 
 export default function ThemeSwitch() {
   const [dark, setDark] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    const theme = getInitialTheme();
-    setDark(theme === "dark");
-    applyTheme(theme);
+    const syncTheme = () => {
+      const root = document.documentElement;
+      const theme =
+        root.dataset.theme ??
+        (root.classList.contains("dark") ? "dark" : "light");
+      setDark(theme === "dark");
+    };
+
+    syncTheme();
+    setMounted(true);
+
+    document.addEventListener("astro:after-swap", syncTheme);
+    document.addEventListener("astro:page-load", syncTheme);
+
+    return () => {
+      document.removeEventListener("astro:after-swap", syncTheme);
+      document.removeEventListener("astro:page-load", syncTheme);
+    };
   }, []);
 
   const onCheckedChange = (checked: boolean) => {
@@ -20,7 +36,12 @@ export default function ThemeSwitch() {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div
+      className={[
+        "flex items-center gap-2 transition-opacity",
+        mounted ? "opacity-100" : "pointer-events-none opacity-0",
+      ].join(" ")}
+    >
       <Sun className="h-4 w-4 text-muted-foreground" />
       <Switch checked={dark} onCheckedChange={onCheckedChange} />
       <Moon className="h-4 w-4 text-muted-foreground" />

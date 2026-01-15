@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   formatCountdown,
   getShalatKabKotaAll,
-  getUpcomingPrayers,
+  getUpcomingPrayersWithFallback,
   getWibISO,
   postShalatJadwal,
   type NextPrayer,
@@ -388,12 +388,17 @@ export default function useSholatPage() {
       bulan: month,
       tahun: year,
     })
-      .then((data) => {
-        if (!active) return;
+      .then(async (data) => {
         const list = data.jadwal ?? [];
         const todayISO = getWibISO(new Date());
         const today = list.find((row) => row.tanggal_lengkap === todayISO) ?? null;
-        const upcoming = getUpcomingPrayers(list, new Date());
+        const upcoming = await getUpcomingPrayersWithFallback({
+          schedule: list,
+          provinsi: location.provinsi,
+          kabkota: location.kabkota,
+          now: new Date(),
+        });
+        if (!active) return;
 
         setSchedule(list);
         setMonthLabel(`${data.bulan_nama} ${data.tahun}`);

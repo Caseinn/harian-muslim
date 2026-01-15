@@ -27,7 +27,7 @@ import {
 import {
   formatCountdown,
   getShalatKabKotaAll,
-  getUpcomingPrayers,
+  getUpcomingPrayersWithFallback,
   getWibISO,
   postShalatJadwal,
   type NextPrayer,
@@ -299,8 +299,13 @@ export default function TodaySection() {
       bulan: month,
       tahun: year,
     })
-      .then((schedule) => {
-        const upcoming = getUpcomingPrayers(schedule.jadwal, new Date());
+      .then(async (schedule) => {
+        const upcoming = await getUpcomingPrayersWithFallback({
+          schedule: schedule.jadwal ?? [],
+          provinsi: location.provinsi,
+          kabkota: location.kabkota,
+          now: new Date(),
+        });
         if (!active) return;
         setNextPrayer(upcoming[0] ?? null);
         setFollowingPrayer(upcoming[1] ?? null);

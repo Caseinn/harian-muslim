@@ -257,6 +257,73 @@ export function getUpcomingPrayers(
   ];
 }
 
+export async function getUpcomingPrayersWithFallback(args: {
+  schedule: ShalatRow[];
+  provinsi: string;
+  kabkota: string;
+  now?: Date;
+}) {
+  const { schedule, provinsi, kabkota } = args;
+  const now = args.now ?? getWibNow();
+
+  if (!schedule.length) return [];
+
+  const upcoming = getUpcomingPrayers(schedule, now);
+  const shouldAppendTomorrowSubuh =
+    upcoming.length === 1 && upcoming[0]?.key === "isya";
+
+  if (upcoming.length >= 2 || (upcoming.length === 1 && !shouldAppendTomorrowSubuh)) {
+    return upcoming;
+  }
+
+  const tomorrow = new Date(now.getTime());
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowISO = getWibISO(tomorrow);
+  let tomorrowRow = getRowByISO(schedule, tomorrowISO);
+
+  if (!tomorrowRow) {
+    const [year, month] = tomorrowISO.split("-").map(Number);
+    if (!Number.isFinite(year) || !Number.isFinite(month)) {
+      return upcoming.length ? upcoming : [];
+    }
+    try {
+      const data = await postShalatJadwal({
+        provinsi,
+        kabkota,
+        bulan: month,
+        tahun: year,
+      });
+      tomorrowRow = getRowByISO(data.jadwal ?? [], tomorrowISO);
+    } catch {
+      return upcoming.length ? upcoming : [];
+    }
+  }
+
+  if (!tomorrowRow) return upcoming.length ? upcoming : [];
+
+  const tomorrowPrayers = PRAYER_ORDER.map((prayer) => {
+    const time = tomorrowRow[prayer.key];
+    const dateTime = getWibDateTime(tomorrowISO, time);
+    if (!dateTime) return null;
+    return {
+      key: prayer.key,
+      label: prayer.label,
+      time,
+      dateISO: tomorrowISO,
+      dateTime,
+      dayOffset: 1,
+    };
+  }).filter(Boolean) as NextPrayer[];
+
+  if (!tomorrowPrayers.length) return upcoming.length ? upcoming : [];
+
+  if (shouldAppendTomorrowSubuh) {
+    return [...upcoming, tomorrowPrayers[0]];
+  }
+
+  return tomorrowPrayers;
+}
+
 export function formatCountdown(ms: number) {
   if (!Number.isFinite(ms) || ms <= 0) return "00:00:00";
 

@@ -62,14 +62,10 @@ const themeDark = "#0f1a15";
     <script src="/last-read.js" defer is:inline></script>
   </head>
   <body class="bg-background text-foreground">
-    <a href="#konten-utama" class="sr-only focus:not-sr-only">
-      Lewati ke konten
-    </a>
-
     <div class="relative min-h-screen">
       <Navbar client:load transition:persist pathname={Astro.url.pathname} />
 
-      <main id="konten-utama" class="relative">
+      <main class="relative">
         <slot />
       </main>
 

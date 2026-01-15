@@ -43,7 +43,12 @@ export default function ThemeSwitch() {
       ].join(" ")}
     >
       <Sun className="h-4 w-4 text-muted-foreground" />
-      <Switch checked={dark} onCheckedChange={onCheckedChange} className="cursor-pointer"/>
+      <Switch
+        checked={dark}
+        onCheckedChange={onCheckedChange}
+        className="cursor-pointer"
+        aria-label="Ganti tema"
+      />
       <Moon className="h-4 w-4 text-muted-foreground" />
     </div>
   );

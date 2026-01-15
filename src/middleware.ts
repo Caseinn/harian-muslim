@@ -2,7 +2,7 @@ import { defineMiddleware } from "astro/middleware";
 
 const csp = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self' 'sha256-JCEBku6f0AvV9kE5gnScK44UMI3Cnm2nlvVOAS8bwPY=' 'sha256-xGWu/UvLZbd67NckrAx5QpjEZVkzTn1cI8MnZdIiC58='",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: blob:",

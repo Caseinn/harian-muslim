@@ -149,6 +149,7 @@ function SelectScrollUpButton({
         "flex cursor-pointer items-center justify-center py-1",
         className
       )}
+      aria-label="Scroll ke atas"
       {...props}
     >
       <ChevronUpIcon className="size-4" />
@@ -167,6 +168,7 @@ function SelectScrollDownButton({
         "flex cursor-pointer items-center justify-center py-1",
         className
       )}
+      aria-label="Scroll ke bawah"
       {...props}
     >
       <ChevronDownIcon className="size-4" />

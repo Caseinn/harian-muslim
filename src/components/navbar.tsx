@@ -115,6 +115,7 @@ export default function Navbar({ pathname }: Props) {
                     className="group size-10 border border-border/60 bg-background/70"
                     size="icon"
                     variant="ghost"
+                    aria-label="Buka menu navigasi"
                   >
                     <svg
                       className="pointer-events-none"

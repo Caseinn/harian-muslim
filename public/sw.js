@@ -11,8 +11,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || "Harian Muslim";
   const options = {
     body: data.body || "Pengingat waktu sholat.",
-    icon: "/favicon.svg",
-    badge: "/favicon.svg",
+    icon: "/logo.webp",
+    badge: "/logo.webp",
     data: {
       url: data.url || "/",
     },

@@ -36,7 +36,6 @@ const themeDark = "#0f1a15";
     <link rel="canonical" href={canonicalUrl} />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
@@ -59,40 +58,8 @@ const themeDark = "#0f1a15";
     ) : null}
     <meta name="twitter:image" content={metaImage} />
     <ViewTransitions />
-    <script>
-      (() => {
-        const STORAGE_KEY = "theme";
-        const getStoredTheme = () => {
-          const stored = localStorage.getItem(STORAGE_KEY);
-          if (stored === "light" || stored === "dark") return stored;
-          return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        };
-        const applyTheme = (root, theme, withInit) => {
-          if (!root) return;
-          if (withInit) root.classList.add("theme-init");
-          root.classList.toggle("dark", theme === "dark");
-          root.dataset.theme = theme;
-          root.style.colorScheme = theme;
-          root.style.backgroundColor = theme === "dark" ? "#0f1a15" : "#f8f9fa";
-          if (withInit) {
-            requestAnimationFrame(() => {
-              root.classList.remove("theme-init");
-            });
-          }
-        };
-
-        applyTheme(document.documentElement, getStoredTheme(), true);
-
-        document.addEventListener("astro:before-swap", (event) => {
-          applyTheme(event.newDocument?.documentElement, getStoredTheme(), false);
-        });
-        document.addEventListener("astro:page-load", () => {
-          applyTheme(document.documentElement, getStoredTheme(), false);
-        });
-      })();
-    </script>
+    <script src="/theme-init.js" is:inline></script>
+    <script src="/last-read.js" defer is:inline></script>
   </head>
   <body class="bg-background text-foreground">
     <a href="#konten-utama" class="sr-only focus:not-sr-only">

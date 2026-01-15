@@ -43,7 +43,7 @@ export default function ThemeSwitch() {
       ].join(" ")}
     >
       <Sun className="h-4 w-4 text-muted-foreground" />
-      <Switch checked={dark} onCheckedChange={onCheckedChange} />
+      <Switch checked={dark} onCheckedChange={onCheckedChange} className="cursor-pointer"/>
       <Moon className="h-4 w-4 text-muted-foreground" />
     </div>
   );

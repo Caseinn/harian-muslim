@@ -118,12 +118,13 @@ export default function FloatingSedekahButton({
                 </div>
 
                 <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">
-                  <h4 className="text-base sm:text-lg font-semibold">
-                    Dukung perbaikan portal ibadah
-                  </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Aplikasi ini gratis tanpa iklan. Jika berkenan, sedekah kamu bantu kualitas & fitur terus bertumbuh.
-                  </p>
+                    <h4 className="text-base sm:text-lg font-semibold">
+                    Dukung Pengembangan Aplikasi Ini.
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    Dibangun secara mandiri untuk kenyamanan ibadahmu. 
+                    Traktir kami kopi atau beri dukungan agar kualitas aplikasi terus meningkat.
+                    </p>
 
                   <a
                     href={danaUrl}

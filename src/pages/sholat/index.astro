@@ -1,0 +1,15 @@
+---
+import Layout from "@/layouts/layout.astro";
+import SholatPage from "@/components/sholat/sholat-page";
+
+export const prerender = false;
+---
+
+<Layout
+  title="Jadwal Sholat"
+  description="Jadwal sholat harian berdasarkan lokasi pilihan."
+>
+  <main class="mx-auto w-full max-w-6xl px-4 py-10 md:px-6">
+    <SholatPage client:idle />
+  </main>
+</Layout>

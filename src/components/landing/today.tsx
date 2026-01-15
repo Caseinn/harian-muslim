@@ -204,6 +204,7 @@ export default function TodaySection() {
 
   const [dailyDoa, setDailyDoa] = React.useState<DoaItem | null>(null);
   const [lastRead, setLastRead] = React.useState<LastRead | null>(null);
+  const [lastReadResolved, setLastReadResolved] = React.useState(false);
   const [surahList, setSurahList] = React.useState<SurahItem[]>([]);
   const [pageMeta, setPageMeta] = React.useState<PageMeta | null>(null);
 
@@ -223,6 +224,7 @@ export default function TodaySection() {
     };
 
     window.addEventListener("storage", onStorage);
+    setLastReadResolved(true);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
@@ -453,6 +455,8 @@ export default function TodaySection() {
   }, [lastRead, pageMeta, surahById]);
 
   const locationLabel = location.kabkota || "Pilih kab/kota";
+  const showLastRead = lastReadResolved && Boolean(lastReadView);
+  const showEmptyLastRead = lastReadResolved && !lastReadView;
 
   return (
     <section className="py-16 sm:py-20">
@@ -479,7 +483,7 @@ export default function TodaySection() {
         ) : null}
       </div>
 
-      {lastReadView ? (
+      {showLastRead ? (
         <div className="flex flex-1 flex-col justify-center gap-4">
           <div className="space-y-2">
             <p className="text-xl font-semibold leading-tight">
@@ -513,7 +517,7 @@ export default function TodaySection() {
             <a href={lastReadView.href}>Lanjutkan Bacaan</a>
           </Button>
         </div>
-      ) : (
+      ) : showEmptyLastRead ? (
         <div className="flex flex-1 flex-col justify-center gap-4">
           <div className="space-y-2">
             <p className="text-lg font-semibold leading-tight">Belum ada bacaan</p>
@@ -527,6 +531,21 @@ export default function TodaySection() {
               <a href="/quran">Buka Surah</a>
             </Button> 
           </div>
+        </div>
+      ) : (
+        <div
+          className="flex flex-1 flex-col justify-center gap-4"
+          aria-hidden="true"
+        >
+          <div className="space-y-2">
+            <div className="h-5 w-40 rounded-full bg-muted/50" />
+            <div className="h-8 w-28 rounded-full bg-muted/40" />
+            <div className="h-4 w-56 rounded-full bg-muted/40" />
+          </div>
+
+          <div className="ornament-divider" />
+
+          <div className="h-10 w-full rounded-full bg-muted/40" />
         </div>
       )}
     </div>
@@ -546,7 +565,7 @@ export default function TodaySection() {
             <Button
               variant="outline"
               size="sm"
-              className="h-9 w-[170px] justify-between"
+              className="h-9 w-[170px] justify-between cursor-pointer"
             >
               {locationLabel}
               <ChevronsUpDown className="opacity-50" />

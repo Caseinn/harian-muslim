@@ -62,6 +62,7 @@ export default function SholatPage() {
             <Button
               type="button"
               variant={notificationsEnabled ? "secondary" : "outline"}
+              className=" cursor-pointer"
               onClick={() => {
                 if (notificationsEnabled) {
                   disableNotifications();

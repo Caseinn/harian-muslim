@@ -47,7 +47,7 @@ export default function LocationPicker({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="h-10 w-full justify-between sm:w-[220px]"
+          className="h-10 w-full justify-between sm:w-[220px] cursor-pointer"
         >
           {locationLabel}
           <ChevronsUpDown className="opacity-50" />

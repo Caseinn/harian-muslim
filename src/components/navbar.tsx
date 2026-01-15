@@ -68,7 +68,7 @@ export default function Navbar({ pathname }: Props) {
           <div className="flex items-center gap-3">
             <a className="group flex items-center gap-3 text-primary" href="/">
               <Logo />
-              <span className="hidden text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-foreground/80 sm:inline">
+              <span className="text-xs font-semibold uppercase tracking-[0.4em] text-foreground/80 sm:inline">
                 Harian Muslim
               </span>
             </a>
@@ -89,7 +89,7 @@ export default function Navbar({ pathname }: Props) {
                     <NavigationMenuItem className="h-full" key={String(index)}>
                       <NavigationMenuLink
                         data-active={isActive ? "" : undefined}
-                        className="relative h-full items-center px-3 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground transition hover:bg-transparent hover:text-primary focus:bg-transparent data-[active]:bg-transparent data-[active]:text-primary data-[active]:hover:bg-transparent data-[active]:focus-visible:bg-transparent after:absolute after:bottom-0 after:left-3 after:right-3 after:h-px after:rounded-full after:bg-secondary after:opacity-0 after:transition data-[active]:after:opacity-100"
+                        className="relative h-full items-center px-3 text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground transition hover:bg-transparent hover:text-primary focus:bg-transparent data-[active]:bg-transparent data-[active]:text-primary data-[active]:hover:bg-transparent data-[active]:focus-visible:bg-transparent after:absolute after:bottom-0 after:left-3 after:right-3 after:h-px after:rounded-full after:bg-secondary after:opacity-0 after:transition data-[active]:after:opacity-100"
                         href={link.href}
                       >
                         {link.label}

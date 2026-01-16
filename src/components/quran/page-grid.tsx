@@ -10,7 +10,7 @@ type Props = {
 
 export default function PageGrid({ pages, pageMeta }: Props) {
   return (
-    <div className="grid gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-9 2xl:grid-cols-10">
+    <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-9 2xl:grid-cols-10">
       {pages.map((page) => {
         const meta = pageMeta[page];
         const juzLabel = meta?.juz ? `Juz ${meta.juz}` : "Juz -";

@@ -9,7 +9,7 @@ const csp = [
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
   "connect-src 'self' https://equran.id https://nominatim.openstreetmap.org",
-  "media-src 'self'",
+  "media-src 'self' https://cdn.equran.id",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
